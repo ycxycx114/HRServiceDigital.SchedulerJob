@@ -1,0 +1,42 @@
+﻿body {
+}
+
+.el-header {
+    background-color: #3dcd58;
+    color: #ffffff;
+    line-height: 60px;
+}
+
+.nav {
+    display: flex;
+    justify-content:space-between;
+    height: 60px;
+    line-height: 60px;
+}
+
+.nav-brand {
+    display: flex;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-brand ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding-left:0;
+}
+
+.nav-logo {
+    display: flex;
+}
+.nav-logo ul {
+    list-style-type: none;
+    margin:0;
+}
+
+.el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    margin: 0 0;
+}

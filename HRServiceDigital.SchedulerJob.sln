@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRServiceDigital.SchedulerJob.Quartz", "src\HRServiceDigital.SchedulerJob.Quartz\HRServiceDigital.SchedulerJob.Quartz.csproj", "{7FF424CF-0DA3-4603-95D1-2C67E9776065}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D244051C-B275-4AF2-BEC3-29A2AFFB422C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0068A7AA-F333-4C19-A71E-5E313BBBF5C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRServiceDigital.SchedulerJob.WebApi", "src\HRServiceDigital.SchedulerJob.WebApi\HRServiceDigital.SchedulerJob.WebApi.csproj", "{71AD8A4B-7419-4D93-BE71-CEE603CAC758}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7FF424CF-0DA3-4603-95D1-2C67E9776065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FF424CF-0DA3-4603-95D1-2C67E9776065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FF424CF-0DA3-4603-95D1-2C67E9776065}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FF424CF-0DA3-4603-95D1-2C67E9776065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71AD8A4B-7419-4D93-BE71-CEE603CAC758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71AD8A4B-7419-4D93-BE71-CEE603CAC758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71AD8A4B-7419-4D93-BE71-CEE603CAC758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71AD8A4B-7419-4D93-BE71-CEE603CAC758}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7FF424CF-0DA3-4603-95D1-2C67E9776065} = {D244051C-B275-4AF2-BEC3-29A2AFFB422C}
+		{71AD8A4B-7419-4D93-BE71-CEE603CAC758} = {D244051C-B275-4AF2-BEC3-29A2AFFB422C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F7CBEC9-BAB5-46B1-BC21-0478B16D2FBA}
+	EndGlobalSection
+EndGlobal

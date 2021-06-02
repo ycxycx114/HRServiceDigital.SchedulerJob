@@ -1,0 +1,7 @@
+/.vs
+/packages
+bin/
+debug/
+obj/
+*.log
+RawData/
