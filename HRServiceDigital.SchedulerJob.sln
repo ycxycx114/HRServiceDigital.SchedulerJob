@@ -11,6 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0068A7AA-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRServiceDigital.SchedulerJob.WebApi", "src\HRServiceDigital.SchedulerJob.WebApi\HRServiceDigital.SchedulerJob.WebApi.csproj", "{71AD8A4B-7419-4D93-BE71-CEE603CAC758}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E7941E51-EB67-4BB7-90E3-7514D214F994}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
