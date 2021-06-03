@@ -12,7 +12,8 @@ namespace HRServiceDigital.SchedulerJob.Quartz
     {
         public string Host { private get; set; }
         public string Url { private get; set; }
-        public List<KeyValuePair<string, string>> Params { private get; set; }
+        //public List<KeyValuePair<string, string>> Params { private get; set; }
+        public string Params { private get; set; }
 
         public async Task Execute(IJobExecutionContext context)
         {
@@ -24,7 +25,7 @@ namespace HRServiceDigital.SchedulerJob.Quartz
                 Url = "/" + Url;
             }
 
-            var paramsStr = "?" + BuildParam(Params);
+            var paramsStr = (!string.IsNullOrEmpty(Params)) ? "?" + Params : string.Empty;
 
             string uri = Host + Url + paramsStr;
             var response = await client.GetAsync(uri);
