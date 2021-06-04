@@ -73,6 +73,8 @@
                 });
                 this.getJobData();
                 this.jobDialogVisible = false;
+            } else {
+                this.$message({ type: 'error', message: 'Job Creation Failed!', offset: 60 });
             }
         },
         editJob() {
@@ -93,8 +95,11 @@
                 jobData: this.jobDetailData.jobData
             });
             if (status === 200) {
+                this.$message({ type: 'success', message: 'Job save Successfully!', offset: 60 });
                 this.getJobData();
                 this.jobDialogVisible = false;
+            } else {
+                this.$message({ type: 'error', message: 'Job save Failed!', offset: 60 });
             }
         },
         addTrigger() {
@@ -104,7 +109,12 @@
                 this.$message.error('Please select one of the job data.');
                 return;
             }
-            var row = selectedJobData[0]
+            var row = selectedJobData[0];
+
+            if (this.triggerData.findIndex(x => x.jobName === row.jobName) >= 0) {
+                this.$message({ type: 'error', message: 'The selected job has been assigned with trigger, no need to create more!', offset: 60});
+                return;
+            }
             this.scheduledJobData = {
                 jobName: row.jobName,
                 jobGroup: row.jobGroup,
@@ -124,9 +134,12 @@
             });
 
             if (status === 200) {
+                this.$message({ type: 'success', message: 'Add Trigger Successfully!', offset: 60 });
                 this.getJobData();
                 this.getTriggerData();
                 this.rescheduleDialogVisible = false;
+            } else {
+                this.$message({ type: 'error', message: 'Add Trigger Failed!', offset: 60 });
             }
         },
         deleteJob(name, group) {
@@ -145,6 +158,8 @@
                     this.getJobData();
                     this.getTriggerData();
                     this.jobDialogVisible = false;
+                } else {
+                    this.$message({ type: 'error', message: 'Delete Job Failed!', offset: 60 });
                 }
             }).catch(() => { })
         },
@@ -163,6 +178,9 @@
                     });
                     var triggerData = this.scheduledTriggerData
                     this.scheduledTriggerData = triggerData.filter(x => x.triggerName !== row.triggerName);
+                    this.getTriggerData();
+                } else {
+                    this.$message({ type: 'error', message: 'Remove Trigger Failed!', offset: 60 });
                 }
             }).catch(() => { })
         },
@@ -188,13 +206,15 @@
                 this.getJobData();
                 this.getTriggerData();
                 this.scheduleJobDialogVisible = false;
+            } else {
+                this.$message({ type: 'error', message: 'Schedule Job Failed!', offset: 60 });
             }
         },
         reschedule() {
             this.isRescheduleJob = true;
             var selectedJobData = this.$refs.jobDataTable.selection
             if (selectedJobData.length !== 1) {
-                this.$message.error('Please select one of the job data.');
+                this.$message({type: 'error', message: 'Please select one of the job data.', offset: 60});
                 return;
             }
             var row = selectedJobData[0]
@@ -232,6 +252,8 @@
                 this.getJobData();
                 this.getTriggerData();
                 this.rescheduleDialogVisible = false;
+            } else {
+                this.$message({ type: 'error', message: 'Reschedule Job Failed!', offset: 60 });
             }
         }
     }
