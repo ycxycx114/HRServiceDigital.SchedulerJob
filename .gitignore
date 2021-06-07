@@ -5,3 +5,4 @@ debug/
 obj/
 *.log
 RawData/
+wwwroot/lib/
