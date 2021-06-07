@@ -1,7 +1,6 @@
 ﻿using HRServiceDigital.SchedulerJob.Core.Jobs;
 using HRServiceDigital.SchedulerJob.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Quartz;
 using Quartz.Impl.Matchers;
@@ -16,21 +15,17 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
     public class JobsController : SchedulerJobControllerBase
     {
         private readonly ISchedulerFactory _SchedulerFactory;
-        private readonly IConfiguration _Configuration;
 
-        public JobsController(ISchedulerFactory schedulerFactory, IConfiguration configuration)
+        public JobsController(ISchedulerFactory schedulerFactory)
         {
             _SchedulerFactory = schedulerFactory;
-            _Configuration = configuration;
         }
 
         [HttpGet]
         public async Task<List<HrsJob>> GetAll()
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-
             List<HrsJob> result = new List<HrsJob>();
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             var groups = await scheduler.GetJobGroupNames();
             foreach (var group in groups)
             {
@@ -41,7 +36,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
                     var jobDetail = await scheduler.GetJobDetail(key);
                     result.Add(new HrsJob
                     {
-                        SchedulerName = schedulerName,
+                        SchedulerName = SchedulerName,
                         JobName = key.Name,
                         JobGroup = key.Group,
                         Description = jobDetail.Description,
@@ -59,14 +54,13 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpGet("{name}/{group}")]
         public async Task<HrsJob> Get([FromRoute] string name, string group)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             var jobDetail = await scheduler.GetJobDetail(new JobKey(name, group));
             if(jobDetail != null)
             {
                 return new HrsJob
                 {
-                    SchedulerName = schedulerName,
+                    SchedulerName = SchedulerName,
                     JobName = name,
                     JobGroup = group,
                     Description = jobDetail.Description,
@@ -84,9 +78,8 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         public async Task Post([FromBody] HrsJob hrsJob)
         {
             var jobName = Guid.NewGuid();
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
 
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             await scheduler.AddJob(JobBuilder.Create<WebApiJob>()
                 .WithIdentity(jobName.ToString(), hrsJob.JobGroup)
                 .WithDescription(hrsJob.Description)
@@ -99,8 +92,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpPut("{name}/{group}")]
         public async Task Put(string name, string group, [FromBody] HrsJob hrsJob)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             await scheduler.AddJob(JobBuilder.Create<WebApiJob>()
                 .WithIdentity(name, group)
                 .WithDescription(hrsJob.Description)
@@ -113,9 +105,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpDelete("{name}/{group}")]
         public async Task Delete(string name, string group)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             await scheduler.DeleteJob(new JobKey(name, group));
         }
 
@@ -123,8 +113,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpPost]
         public async Task ScheduleJob([FromBody] HrsScheduleJob hrsScheduleJob)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
 
             var job = JobBuilder.Create<WebApiJob>()
                 .WithIdentity(Guid.NewGuid().ToString(), hrsScheduleJob.JobGroup)

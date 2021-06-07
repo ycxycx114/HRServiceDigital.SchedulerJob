@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>HRS Scheduler Job Management</title>
+    <link href="lib/element-ui/theme-chalk/index.min.css" rel="stylesheet" />
+    <link href="css/main.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <div class="nav">
+                    <div class="nav-brand">
+                        <ul>
+                            <li>Schedule Job Management</li>
+                        </ul>
+                    </div>
+                    <div class="nav-logo">
+                        <ul>
+                            <li>
+                                <img src="images/company-logo.png" height="60" />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </el-header>
+            <el-main>
+                <el-form ref="form" :model="searchForm" label-width="80px">
+                    <el-form-item label="Instance">
+                        <el-select v-model="searchForm.instanceName" placeholder="Please select...">
+                            <el-option v-for="item in schedulerClusters" :label="item" :value="item" :key="item"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <br />
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <!--Scheduler Dashboard-->
+                    <!--<el-tab-pane label="Dashboard" name="first">用户管理</el-tab-pane>-->
+                    <!--Job Management-->
+                    <el-tab-pane label="Job Management" name="first">
+                        <el-card>
+                            <el-button type="primary" size="mini" @click="addJob">Add Job</el-button>
+                            <el-button type="primary" size="mini" @click="addTrigger">Add Trigger</el-button>
+                            <el-button type="primary" size="mini" @click="scheduleJob">Schedule Job</el-button>
+                            <el-button type="primary" size="mini" @click="editJob">Edit Job</el-button>
+                            <el-button type="primary" size="mini" @click="reschedule">Reschedule</el-button>
+                        </el-card>
+                        <el-table :data="jobData" ref="jobDataTable"
+                                  stripe
+                                  style="width: 100%">
+                            <el-table-column type="selection"></el-table-column>
+                            <el-table-column type="index" label="#"></el-table-column>
+                            <el-table-column prop="jobName"
+                                             label="Job Name"
+                                             min-width="120px">
+                            </el-table-column>
+                            <el-table-column prop="jobGroup"
+                                             label="Job Group">
+                            </el-table-column>
+                            <el-table-column prop="description"
+                                             label="Description">
+                            </el-table-column>
+                            <el-table-column prop="jobData"
+                                             label="Job Data"
+                                             min-width="150px">
+                            </el-table-column>
+                            <el-table-column label="Triggers">
+                                <template slot-scope="scope">
+                                    <el-button type="primary" size="mini" @click="showTriggers(scope.row)">Triggers</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-main>
+        </el-container>
+
+        <!--trigger dialog-->
+        <el-dialog title="Scheduled Triggers"
+                   :visible.sync="triggerDialogVisible"
+                   width="80%">
+            <el-table :data="scheduledTriggerData"
+                      stripe
+                      style="width: 100%">
+                <el-table-column type="index" label="#"></el-table-column>
+                <el-table-column prop="triggerName"
+                                 label="Trigger Name"
+                                 min-width="180px">
+                </el-table-column>
+                <el-table-column prop="triggerGroup"
+                                 label="Trigger Group"
+                                 min-width="90px">
+                </el-table-column>
+                <el-table-column prop="description"
+                                 label="Description"
+                                 min-width="150px">
+                </el-table-column>
+                <el-table-column prop="cronExpression"
+                                 label="Cron Expression"
+                                 min-width="120px">
+                </el-table-column>
+                <el-table-column>
+                    <template slot-scope="scope">
+                        <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="removeTrigger(scope.row)"></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="triggerDialogVisible = false">Cancel</el-button>
+            </span>
+        </el-dialog>
+
+        <!--Add new Job/Edit Job dialog-->
+        <el-dialog title="Job Detail" :visible.sync="jobDialogVisible"
+                   width="60%">
+            <el-form ref="jobForm" :model="jobDetailData" label-width="140px">
+                <el-form-item label="Job Name" v-if="isEditJob">
+                    <el-span v-text="jobDetailData.jobName"></el-span>
+                </el-form-item>
+                <el-form-item label="Job Group">
+                    <el-input v-model="jobDetailData.jobGroup" clearable placeholder="Job Group"></el-input>
+                </el-form-item>
+                <el-form-item label="Description">
+                    <el-input v-model="jobDetailData.description" clearable placeholder="Job Description"></el-input>
+                </el-form-item>
+                <el-form-item label="Job Data">
+                    <el-input type="textarea" v-model="jobDetailData.jobData" clearable placeholder="Job Data Map"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="jobDialogVisible = false">Cancel</el-button>
+                <el-button size="small" type="primary" @click="saveAddJob" v-if="!isEditJob">Save Add</el-button>
+                <el-button size="small" type="danger" @click="deleteJob(jobDetailData.jobName, jobDetailData.jobGroup)" v-if="isEditJob">Delete</el-button>
+                <el-button size="small" type="primary" @click="saveJob" v-if="isEditJob">Save Changes</el-button>
+            </span>
+        </el-dialog>
+
+
+        <!--Schedule Job dialog-->
+        <el-dialog title="Scheduler Job" :visible.sync="scheduleJobDialogVisible"
+                   width="60%">
+            <el-form ref="scheduleJobForm" :model="scheduledJobData" label-width="140px">
+                <el-form-item label="Job Group">
+                    <el-input v-model="scheduledJobData.jobGroup" clearable placeholder="Job Group"></el-input>
+                </el-form-item>
+                <el-form-item label="Job Description">
+                    <el-input v-model="scheduledJobData.jobDescription" clearable placeholder="Job Description"></el-input>
+                </el-form-item>
+                <el-form-item label="Job Data">
+                    <el-input type="textarea" v-model="scheduledJobData.jobData" clearable placeholder="Job Data"></el-input>
+                </el-form-item>
+                <el-form-item label="Trigger Group">
+                    <el-input v-model="scheduledJobData.triggerGroup" clearable placeholder="Trigger Group"></el-input>
+                </el-form-item>
+                <el-form-item label="Trigger Description">
+                    <el-input v-model="scheduledJobData.triggerDescription" clearable placeholder="Trigger Description"></el-input>
+                </el-form-item>
+                <el-form-item label="Cron Expression">
+                    <el-input v-model="scheduledJobData.cronExpression" clearable placeholder="Cron Expression"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="scheduleJobDialogVisible = false">Cancel</el-button>
+                <el-button size="small" type="primary" @click="saveScheduleJob">Save Schedule Job</el-button>
+            </span>
+        </el-dialog>
+
+        <!--Reschedule Job/Add Trigger dialog-->
+        <el-dialog title="Amend Schedule Job" :visible.sync="rescheduleDialogVisible"
+                   width="60%">
+            <el-form ref="jobForm" :model="scheduledJobData" label-width="140px">
+                <el-form-item label="Job Name">
+                    <el-span v-text="scheduledJobData.jobName"></el-span>
+                </el-form-item>
+                <el-form-item label="Job Group">
+                    <el-span v-text="scheduledJobData.jobGroup"></el-span>
+                </el-form-item>
+                <el-form-item label="Job Description">
+                    <el-span v-text="scheduledJobData.jobDescription"></el-span>
+                </el-form-item>
+                <el-form-item label="Job Data">
+                    <el-span type="textarea" v-text="scheduledJobData.jobData"></el-span>
+                </el-form-item>
+                <el-form-item label="Trigger Name" v-if="isRescheduleJob">
+                    <el-span v-text="scheduledJobData.triggerName"></el-span>
+                </el-form-item>
+                <el-form-item label="Trigger Group">
+                    <el-input v-model="scheduledJobData.triggerGroup" clearable placeholder="Trigger Group"></el-input>
+                </el-form-item>
+                <el-form-item label="Trigger Description">
+                    <el-input v-model="scheduledJobData.triggerDescription" clearable placeholder="Trigger Description"></el-input>
+                </el-form-item>
+                <el-form-item label="Cron Expression">
+                    <el-input v-model="scheduledJobData.cronExpression" clearable placeholder="Cron Expression"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="rescheduleDialogVisible = false">Cancel</el-button>
+                <el-button size="small" type="primary" @click="addTriggerConfirm" v-if="!isRescheduleJob">Save Add</el-button>
+                <el-button size="small" type="primary" @click="doRescheduleJob" v-if="isRescheduleJob">Save Changes</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <script src="lib/vue/vue.min.js"></script>
+    <script src="lib/element-ui/index.min.js"></script>
+    <script src="lib/axios/axios.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

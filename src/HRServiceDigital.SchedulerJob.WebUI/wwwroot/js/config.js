@@ -3,7 +3,7 @@ Vue.prototype.$http = axios;
 
 /** axios config */
 //axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost'
+axios.defaults.baseURL = 'http://localhost:5000'
 
 /**
  * 

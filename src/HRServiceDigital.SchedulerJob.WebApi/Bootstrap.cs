@@ -13,8 +13,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi
         {
             FluentMapper.Initialize(config =>
             {
-                config.AddMap(new TriggerViewModel.TriggerViewModelMap());
-                config.AddMap(new JobViewModel.JobVieModelwMap());
+                
             });
         }
     }

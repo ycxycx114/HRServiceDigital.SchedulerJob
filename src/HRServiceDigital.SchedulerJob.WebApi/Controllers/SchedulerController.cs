@@ -24,7 +24,8 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpGet]
         public string GetSchedulerName()
         {
-            return GetSchedulerName(_Configuration.GetSection("Quartz"));
+            //return GetSchedulerName(_Configuration.GetSection("Quartz"));
+            return SchedulerName;
         }
 
         [Route("cluster")]

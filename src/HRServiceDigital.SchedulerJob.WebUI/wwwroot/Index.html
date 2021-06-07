@@ -36,42 +36,9 @@
                 <br />
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <!--Scheduler Dashboard-->
-                    <el-tab-pane label="Dashboard" name="first">用户管理</el-tab-pane>
+                    <!--<el-tab-pane label="Dashboard" name="first">用户管理</el-tab-pane>-->
                     <!--Job Management-->
-                    <el-tab-pane label="Job Management" name="second">
-                        <el-card>
-                            <el-button type="primary" size="mini" @click="addJob">Add Job</el-button>
-                            <el-button type="primary" size="mini" @click="addTrigger">Add Trigger</el-button>
-                            <el-button type="primary" size="mini" @click="scheduleJob">Schedule Job</el-button>
-                            <el-button type="primary" size="mini" @click="editJob">Edit Job</el-button>
-                            <el-button type="primary" size="mini" @click="reschedule">Reschedule</el-button>
-                        </el-card>
-                        <el-table :data="jobData" ref="jobDataTable"
-                                  stripe
-                                  style="width: 100%">
-                            <el-table-column type="selection"></el-table-column>
-                            <el-table-column type="index" label="#"></el-table-column>
-                            <el-table-column prop="jobName"
-                                             label="Job Name"
-                                             min-width="120px">
-                            </el-table-column>
-                            <el-table-column prop="jobGroup"
-                                             label="Job Group">
-                            </el-table-column>
-                            <el-table-column prop="description"
-                                             label="Description">
-                            </el-table-column>
-                            <el-table-column prop="jobData"
-                                             label="Job Data"
-                                             min-width="150px">
-                            </el-table-column>
-                            <el-table-column label="Triggers">
-                                <template slot-scope="scope">
-                                    <el-button type="primary" size="mini" @click="showTriggers(scope.row)">Triggers</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-tab-pane>
+                    
                 </el-tabs>
             </el-main>
         </el-container>

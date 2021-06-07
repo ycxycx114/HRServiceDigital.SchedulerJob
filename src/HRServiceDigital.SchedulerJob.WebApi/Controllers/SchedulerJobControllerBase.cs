@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HRServiceDigital.SchedulerJob.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,14 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
 {
     public class SchedulerJobControllerBase : ControllerBase
     {
-        protected string GetSchedulerName(IConfigurationSection configurationSection)
+        protected string SchedulerName
         {
-            return configurationSection.GetSection("quartz.scheduler.instanceName").Value;
+            get
+            {
+                var quartzConfig = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
+                return quartzConfig.GetValue<string>("Quartz:quartz.scheduler.instanceName");
+            }
         }
+        
     }
 }

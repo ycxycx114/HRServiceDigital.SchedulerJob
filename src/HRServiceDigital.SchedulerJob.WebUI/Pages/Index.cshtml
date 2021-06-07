@@ -1,0 +1,52 @@
+﻿@page
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div id="app">
+    <el-table :data="jobData" ref="jobDataTable"
+              stripe
+              style="width: 100%">
+        <el-table-column type="index" label="#"></el-table-column>
+        <el-table-column prop="jobName"
+                         label="Job Name"
+                         min-width="120px">
+        </el-table-column>
+        <el-table-column prop="jobGroup"
+                         label="Job Group">
+        </el-table-column>
+        <el-table-column prop="description"
+                         label="Description">
+        </el-table-column>
+        <el-table-column prop="jobData"
+                         label="Job Data"
+                         min-width="150px">
+        </el-table-column>
+        <el-table-column prop="fireInstanceId" label="Instance Id"></el-table-column>
+        <el-table-column prop="scheduledFireTime" label="Scheduled Fire Time"></el-table-column>
+        <el-table-column prop="fireTime" label="Fire Time"></el-table-column>
+        <el-table-column prop="previousFireTimeUtc" label="Previous Fire Time"></el-table-column>
+        <el-table-column prop="nextFireTimeUtc" label="Next Fire Time"></el-table-column>
+    </el-table>
+</div>
+
+@section Scripts{ 
+<script type="text/javascript">
+    const vm = new Vue({
+        el: '#app',
+        data: {
+            jobData:[]
+        },
+        created() {
+            setInterval(() => { this.getRunningJobs() }, 5000);
+        },
+        methods: {
+            async getRunningJobs() {
+                const { status: status, data: data } = await this.$http.get('/api/services/quartz/Reporting/runningJobs');
+                if (status === 200) {
+                    this.jobData = data;
+                }
+            }
+        }
+    })
+</script>
+}

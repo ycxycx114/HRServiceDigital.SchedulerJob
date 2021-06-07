@@ -14,31 +14,11 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Models
         public string JobClassName { get; set; }
         public string JobGroup { get; set; } = "DEFAULT";
         public string Description { get; set; }
-        public bool IsDurable { get; set; }
-        public bool IsNonConcurrent { get; set; }
-        public bool IsUpdateData { get; set; }
-        public bool RequestsRecovery { get; set; }
-        public string JobData
-        {
-            get => System.Text.Encoding.UTF8.GetString(this.JobDataByte);
-        }
-
-        [JsonIgnore]
-        public byte[] JobDataByte { get; set; }
-        public class JobVieModelwMap : EntityMap<JobViewModel>
-        {
-            public JobVieModelwMap()
-            {
-                Map(p => p.SchedulerName).ToColumn("SCHED_NAME");
-                Map(p => p.JobName).ToColumn("JOB_NAME");
-                Map(p => p.JobClassName).ToColumn("JOB_CLASS_NAME");
-                Map(p => p.JobGroup).ToColumn("JOB_GROUP");
-                Map(p => p.Description).ToColumn("DESCRIPTION");
-                Map(p => p.IsDurable).ToColumn("IS_DURABLE");
-                Map(p => p.IsNonConcurrent).ToColumn("IS_NONCONCURRENT");
-                Map(p => p.IsUpdateData).ToColumn("IS_UPDATE_DATA");
-                Map(p => p.JobDataByte).ToColumn("JOB_DATA");
-            }
-        }
+        public string FireInstanceId { get; set; }
+        public string ScheduledFireTime { get; set; }
+        public string FireTime { get; set; }
+        public string PreviousFireTimeUtc { get; set; }
+        public string NextFireTimeUtc { get; set; }
+        public string JobData { get; set; }
     }
 }

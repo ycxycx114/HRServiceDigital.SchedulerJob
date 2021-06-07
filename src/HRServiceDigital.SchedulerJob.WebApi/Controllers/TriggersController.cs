@@ -1,6 +1,5 @@
 ﻿using HRServiceDigital.SchedulerJob.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.Impl.Matchers;
 using System;
@@ -14,20 +13,17 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
     public class TriggersController : SchedulerJobControllerBase
     {
         private readonly ISchedulerFactory _SchedulerFactory;
-        private readonly IConfiguration _Configuration;
 
-        public TriggersController(ISchedulerFactory schedulerFactory, IConfiguration configuration)
+        public TriggersController(ISchedulerFactory schedulerFactory)
         {
             _SchedulerFactory = schedulerFactory;
-            _Configuration = configuration;
         }
 
         [HttpGet]
         public async Task<IEnumerable<HrsTrigger>> GetAll()
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
             List<HrsTrigger> result = new List<HrsTrigger>();
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             var groups = await scheduler.GetTriggerGroupNames();
             foreach (var group in groups)
             {
@@ -40,7 +36,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
                     ICronTrigger cronTrigger = trigger as ICronTrigger;
                     result.Add(new HrsTrigger
                     {
-                        SchedulerName = schedulerName,
+                        SchedulerName = SchedulerName,
                         TriggerName = key.Name,
                         TriggerGroup = key.Group,
                         JobName = trigger.JobKey.Name,
@@ -57,15 +53,14 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpGet("{name}/{group}")]
         public async Task<HrsTrigger> Get([FromRoute] string name, string group)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             var trigger = await scheduler.GetTrigger(new TriggerKey(name, group));
             if(trigger != null)
             {
                 ICronTrigger cronTrigger = trigger as ICronTrigger;
                 return new HrsTrigger
                 {
-                    SchedulerName = schedulerName,
+                    SchedulerName = SchedulerName,
                     TriggerName = name,
                     TriggerGroup = group,
                     JobName = trigger.JobKey.Name,
@@ -81,9 +76,8 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpPost]
         public async Task Post([FromBody] HrsTrigger hrsTrigger)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
             var triggerName = Guid.NewGuid();
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
 
             var job = await scheduler.GetJobDetail(new JobKey(hrsTrigger.JobName, hrsTrigger.JobGroup));
             
@@ -101,8 +95,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpPut("{name}/{group}")]
         public async Task Put(string name, string group, [FromBody] HrsTrigger hrsTrigger)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             var job = await scheduler.GetJobDetail(new JobKey(hrsTrigger.JobName, hrsTrigger.JobGroup));
             var oldTriggerKey = new TriggerKey(name, group);
             var trigger = await scheduler.GetTrigger(oldTriggerKey);
@@ -113,8 +106,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
         [HttpDelete("{name}/{group}")]
         public async Task Delete(string name, string group)
         {
-            string schedulerName = GetSchedulerName(_Configuration.GetSection("Quartz"));
-            var scheduler = await _SchedulerFactory.GetScheduler(schedulerName);
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
             await scheduler.UnscheduleJob(new TriggerKey(name, group));
         }
     }

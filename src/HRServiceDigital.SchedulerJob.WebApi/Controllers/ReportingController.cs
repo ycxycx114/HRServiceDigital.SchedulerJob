@@ -1,7 +1,11 @@
 ﻿using Dapper;
+using HRServiceDigital.SchedulerJob.Core.Utils;
 using HRServiceDigital.SchedulerJob.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Quartz;
+using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,12 +20,13 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
     {
 
         private readonly IDbConnection _DbConnection;
-        private readonly IConfiguration _Configuration;
+        private readonly ISchedulerFactory _SchedulerFactory;
 
-        public ReportingController(IDbConnection dbConnection, IConfiguration configuration)
+        public ReportingController(IDbConnection dbConnection,
+            ISchedulerFactory schedulerFactory)
         {
             _DbConnection = dbConnection;
-            _Configuration = configuration;
+            _SchedulerFactory = schedulerFactory;
         }
 
         [HttpGet]
@@ -68,6 +73,52 @@ namespace HRServiceDigital.SchedulerJob.WebApi.Controllers
 
             return await _DbConnection.QueryAsync<TriggerViewModel>(sql,
                 new { Scheduler = new DbString { Value = schedulerName } });
+        }
+
+        [HttpGet]
+        [Route("triggerStatus")]
+        public async Task<List<string>> GetTriggerStatus()
+        {
+            List<string> result = new List<string>();
+
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
+
+            var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+            foreach (var key in allTriggerKeys)
+            {
+                var triggerStatus = await scheduler.GetTriggerState(key);
+                result.Add(triggerStatus.ToString());
+            }
+
+            return result;
+        }
+
+        [HttpGet]
+        [Route("runningJobs")]
+        public async Task<List<JobViewModel>> GetCurrentExecutingJobs()
+        {
+            List<JobViewModel> result = new List<JobViewModel>();
+
+            var scheduler = await _SchedulerFactory.GetScheduler(SchedulerName);
+
+            var allRunningJobs = await scheduler.GetCurrentlyExecutingJobs();
+            foreach (var job in allRunningJobs)
+            {
+                result.Add(new JobViewModel
+                {
+                    SchedulerName = job.Scheduler.SchedulerName,
+                    JobName = job.JobDetail.Key.Name,
+                    JobGroup = job.JobDetail.Key.Group,
+                    Description = job.JobDetail.Description,
+                    FireInstanceId = job.Scheduler.SchedulerInstanceId,
+                    ScheduledFireTime = job.ScheduledFireTimeUtc.FormatDateTime(),
+                    FireTime = job.FireTimeUtc.FormatDateTime(),
+                    PreviousFireTimeUtc = job.PreviousFireTimeUtc.FormatDateTime(),
+                    NextFireTimeUtc = job.NextFireTimeUtc.FormatDateTime(),
+                    JobData = JsonConvert.SerializeObject(job.JobDetail.JobDataMap)
+                });
+            }
+            return result;
         }
     }
 }

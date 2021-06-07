@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HRServiceDigital.SchedulerJob.WebApiJob.Controllers
@@ -10,17 +11,22 @@ namespace HRServiceDigital.SchedulerJob.WebApiJob.Controllers
     [ApiController]
     public class ScheduleJobController : ControllerBase
     {
+        private static int NoParamCount = 0;
+        private static int OneParamCount = 0;
+
         [HttpGet]
         public string Get()
         {
-            return $"Scheduler job Sucess - {DateTime.Now}";
+            Thread.Sleep(18000);
+            return $"Scheduler job Sucess with {NoParamCount++} times.";
         }
 
         [Route("a2")]
         [HttpGet]
         public string Get2([FromQuery] string a)
         {
-            return $"No. 2 with param [{a}] - Scheduler Job sucess - {DateTime.Now}";
+            Thread.Sleep(12000);
+            return $"No. 2 with param [{a}] - Scheduler Job sucess with {OneParamCount++} times.";
         }
 
     }

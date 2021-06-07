@@ -18,9 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRServiceDigital.SchedulerJob.Quartz", "src\HRServiceDigital.SchedulerJob.Quartz\HRServiceDigital.SchedulerJob.Quartz.csproj", "{7F22872C-E115-42D5-BB68-CBA7DB414728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRServiceDigital.SchedulerJob.Core", "src\HRServiceDigital.SchedulerJob.Core\HRServiceDigital.SchedulerJob.Core.csproj", "{61212F99-1909-4C73-BF71-64E32CA12E86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRServiceDigital.SchedulerJob.Core", "src\HRServiceDigital.SchedulerJob.Core\HRServiceDigital.SchedulerJob.Core.csproj", "{61212F99-1909-4C73-BF71-64E32CA12E86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRServiceDigital.SchedulerJob.WebUI", "src\HRServiceDigital.SchedulerJob.WebUI\HRServiceDigital.SchedulerJob.WebUI.csproj", "{61EC02AE-F1E1-4F23-A11C-08F73FBFB115}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HRServiceDigital.SchedulerJob.WebUI", "src\HRServiceDigital.SchedulerJob.WebUI\HRServiceDigital.SchedulerJob.WebUI.csproj", "{61EC02AE-F1E1-4F23-A11C-08F73FBFB115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

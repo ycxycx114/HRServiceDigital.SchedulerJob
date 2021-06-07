@@ -22,6 +22,7 @@ namespace HRServiceDigital.SchedulerJob.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,12 +37,18 @@ namespace HRServiceDigital.SchedulerJob.WebUI
                 app.UseExceptionHandler("/Error");
             }
 
-            var options = new DefaultFilesOptions();
-            options.DefaultFileNames.Clear();
-            options.DefaultFileNames.Add("Index.html");
-            app.UseDefaultFiles(options);
+            //var options = new DefaultFilesOptions();
+            //options.DefaultFileNames.Clear();
+            //options.DefaultFileNames.Add("Index.html");
+            //app.UseDefaultFiles(options);
             app.UseStaticFiles();
 
+            app.UseRouting();
+
+            app.UseEndpoints(endPoints =>
+            {
+                endPoints.MapRazorPages();
+            });
         }
     }
 }

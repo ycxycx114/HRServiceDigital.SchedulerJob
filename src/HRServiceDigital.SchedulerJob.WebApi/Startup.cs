@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using HRServiceDigital.SchedulerJob.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi
         {
             services.AddControllers();
 
-            services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().WithOrigins("http://localhost:8000")));
+            services.AddCors(options => options.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:8000")));
 
             services.AddScoped<IDbConnection>(db => new SqlConnection(Configuration.GetConnectionString("QuartzDb")));
 
@@ -56,11 +57,11 @@ namespace HRServiceDigital.SchedulerJob.WebApi
                         });
                         config.UseJsonSerializer();
 
-                        config.UseClustering(c =>
-                        {
-                            c.CheckinInterval = TimeSpan.FromSeconds(10);
-                            c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
-                        });
+                        //config.UseClustering(c =>
+                        //{
+                        //    c.CheckinInterval = TimeSpan.FromSeconds(10);
+                        //    c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
+                        //});
                     });
 
                     q.UseDedicatedThreadPool(tp => tp.MaxConcurrency = 10);
@@ -83,7 +84,8 @@ namespace HRServiceDigital.SchedulerJob.WebApi
                 });
             });
 
-            Bootstrap.ConfigMap();
+            //Bootstrap.ConfigMap();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
