@@ -1,4 +1,5 @@
 ﻿using HRServiceDigital.SchedulerJob.Core;
+using HRServiceDigital.SchedulerJob.Core.Listeners;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
@@ -65,6 +66,8 @@ namespace HRServiceDigital.SchedulerJob.WebApi
                     });
 
                     q.UseDedicatedThreadPool(tp => tp.MaxConcurrency = 10);
+
+                    q.AddJobListener<WebApiJobListenser>();
                 });
 
             // Quartz.Extensions.Hosting hosting

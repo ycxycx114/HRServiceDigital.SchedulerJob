@@ -122,6 +122,39 @@
                 <el-input v-model="scheduledJobData.cronExpression" clearable placeholder="Cron Expression"></el-input>
             </el-form-item>
         </el-form>
+        <el-form label-width="140px">
+            <el-form-item label="Schedule Time">
+                <template>
+                    <el-time-picker v-model="scheduleTime"
+                                    placeholder="Schedule time">
+                    </el-time-picker>
+                    <el-button type="primary" icon="el-icon-refresh" @@click="refreshCronExpression"></el-button>
+                </template>
+            </el-form-item>
+            <el-form-item label-width="0">
+                <el-tabs v-model="cronTab" tab-position="left">
+                    <el-tab-pane name="daily" label="Daily">
+                        <template>
+                            <el-checkbox v-model="dailyCheck" label="Daily"></el-checkbox>
+                        </template>
+                    </el-tab-pane>
+                    <el-tab-pane name="weekly" label="Weekly">
+                        <template>
+                            <el-checkbox-group v-model="checkedDaysInWeek" @@change="handleCheckedDaysChangeInWeek">
+                                <el-checkbox v-for="day in weekly" :label="day" :key="day">{{day}}</el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-tab-pane>
+                    <el-tab-pane name="monthly" label="Monthly">
+                        <template>
+                            <el-checkbox-group v-model="checkedDaysInMonth" @@change="handleCheckedDaysChangeInMonth">
+                                <el-checkbox v-for="day in monthly" :label="day" :key="day">{{day}}</el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-form-item>
+        </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button size="small" @@click="scheduleJobDialogVisible = false">Cancel</el-button>
             <el-button size="small" type="primary" @@click="saveScheduleJob">Save Schedule Job</el-button>
@@ -157,6 +190,39 @@
                 <el-input v-model="scheduledJobData.cronExpression" clearable placeholder="Cron Expression"></el-input>
             </el-form-item>
         </el-form>
+        <el-form label-width="140px">
+            <el-form-item label="Schedule Time">
+                <template>
+                    <el-time-picker v-model="scheduleTime"
+                                    placeholder="Schedule time">
+                    </el-time-picker>
+                    <el-button type="primary" icon="el-icon-refresh" @@click="refreshCronExpression"></el-button>
+                </template>
+            </el-form-item>
+            <el-form-item label-width="0">
+                <el-tabs v-model="cronTab" tab-position="left">
+                    <el-tab-pane name="daily" label="Daily">
+                        <template>
+                            <el-checkbox v-model="dailyCheck" label="Daily"></el-checkbox>
+                        </template>
+                    </el-tab-pane>
+                    <el-tab-pane name="weekly" label="Weekly">
+                        <template>
+                            <el-checkbox-group v-model="checkedDaysInWeek" @@change="handleCheckedDaysChangeInWeek">
+                                <el-checkbox v-for="day in weekly" :label="day" :key="day">{{day}}</el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-tab-pane>
+                    <el-tab-pane name="monthly" label="Monthly">
+                        <template>
+                            <el-checkbox-group v-model="checkedDaysInMonth" @@change="handleCheckedDaysChangeInMonth">
+                                <el-checkbox v-for="day in monthly" :label="day" :key="day">{{day}}</el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-form-item>
+        </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button size="small" @@click="rescheduleDialogVisible = false">Cancel</el-button>
             <el-button size="small" type="primary" @@click="addTriggerConfirm" v-if="!isRescheduleJob">Save Add</el-button>
@@ -169,18 +235,10 @@
         const vm = new Vue({
             el: '#app',
             async created() {
-                //const { status: clusterStatus, data: clusterData } = await this.$http.get('/api/services/quartz/Scheduler/cluster');
-                //if (clusterStatus === 200) {
-                //    this.schedulerClusters = clusterData;
-                //}
                 this.getJobData();
                 this.getTriggerData();
             },
             data: {
-                activeName: 'first',
-                searchForm: {
-                    instanceName: 'QuartzScheduler'
-                },
                 triggerDialogVisible: false,
                 jobDialogVisible: false,
                 isEditJob: false,
@@ -192,9 +250,47 @@
                 triggerData: [],
                 scheduledTriggerData: [],
                 jobDetailData: {},
-                scheduledJobData: {}
+                scheduledJobData: {},
+                scheduleTime: {},
+                dailyCheck: false,
+                weekly: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+                monthly: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', 'last'],
+                checkedDaysInWeek: [],
+                checkedDaysInMonth: [],
+                cronTab:'daily'
             },
             methods: {
+                handleCheckedDaysChangeInWeek() {
+
+                },
+                handleCheckedDaysChangeInMonth() {
+
+                },
+                refreshCronExpression() {
+                    if (this.scheduleTime != null) {
+                        var cronExpression = `${this.scheduleTime.getSeconds()} ${this.scheduleTime.getMinutes()} ${this.scheduleTime.getHours()} `;
+                        var trigger = {};
+                        switch (this.cronTab) {
+                            case 'weekly':
+                                trigger = this.checkedDaysInWeek;
+                                cronExpression += '? * ';
+                                cronExpression += trigger;
+                                break;
+                            case 'monthly':
+                                trigger = this.checkedDaysInMonth;
+                                cronExpression += trigger;
+                                cronExpression += ' * ?';
+                                break;
+                            default:
+                                trigger = 'Daily';
+                                cronExpression += '* * ?';
+                                break;
+                        }
+                        console.log(this.scheduledJobData);
+                        console.log(cronExpression);
+                        this.scheduledJobData.cronExpression = cronExpression;
+                    }                    
+                },
                 handleClick(tab, event) {
                     console.log(tab, event);
                 },
@@ -354,6 +450,11 @@
                 },
                 scheduleJob() {
                     this.isRescheduleJob = false;
+                    this.checkedDaysInWeek = [];
+                    this.checkedDaysInMonth = [];
+                    this.dailyCheck = false;
+                    this.scheduleTime = null;
+                    this.cronTab= 'daily';
                     this.scheduledJobData = {
                         jobGroup: 'DEFAULT',
                         triggerGroup: 'DEFAULT'
@@ -380,6 +481,11 @@
                 },
                 reschedule() {
                     this.isRescheduleJob = true;
+                    this.checkedDaysInWeek = [];
+                    this.checkedDaysInMonth = [];
+                    this.dailyCheck = false;
+                    this.scheduleTime = null;
+                    this.cronTab = 'daily';
                     var selectedJobData = this.$refs.jobDataTable.selection
                     if (selectedJobData.length !== 1) {
                         this.$message({ type: 'error', message: 'Please select one of the job data.', offset: 60 });

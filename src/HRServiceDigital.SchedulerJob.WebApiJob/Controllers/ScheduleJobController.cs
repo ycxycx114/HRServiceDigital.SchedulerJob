@@ -17,7 +17,7 @@ namespace HRServiceDigital.SchedulerJob.WebApiJob.Controllers
         [HttpGet]
         public string Get()
         {
-            Thread.Sleep(18000);
+            //Thread.Sleep(7000);
             return $"Scheduler job Sucess with {NoParamCount++} times.";
         }
 
@@ -25,7 +25,7 @@ namespace HRServiceDigital.SchedulerJob.WebApiJob.Controllers
         [HttpGet]
         public string Get2([FromQuery] string a)
         {
-            Thread.Sleep(12000);
+            Thread.Sleep(9000);
             return $"No. 2 with param [{a}] - Scheduler Job sucess with {OneParamCount++} times.";
         }
 
