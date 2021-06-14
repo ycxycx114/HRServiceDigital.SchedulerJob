@@ -16,6 +16,7 @@ namespace HRServiceDigital.SchedulerJob.WebApi
             Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
+            .WriteTo.File("./App_Data/Log/log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, fileSizeLimitBytes: 52428800)
             .CreateLogger();
 
             CreateHostBuilder(args).Build().Run();

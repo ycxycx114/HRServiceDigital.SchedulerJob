@@ -6,3 +6,4 @@ obj/
 *.log
 RawData/
 HRServiceDigital.SchedulerJob.WebUI/wwwroot/lib/
+/src/HRServiceDigital.SchedulerJob.WebApi/App_Data/Log
